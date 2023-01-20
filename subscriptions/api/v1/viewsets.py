@@ -14,6 +14,12 @@ class SubscriptionViewSet(viewsets.ViewSet):
     permission_classes = (IsAuthenticated,)
     queryset = Subscription.objects.all()
 
+    def create(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
     def retrieve(self, request, *args, pk=None):
         return Response(self.serializer_class(self.queryset))
 
