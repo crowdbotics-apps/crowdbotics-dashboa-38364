@@ -36,6 +36,15 @@ urlpatterns = [
     path("api/v1/", include("subscriptions.api.v1.urls")),
     path("api/v1/", include("subscriptions.api.v1.urls")),
 
+    path("api/v1/", include("subscriptions.api.v1.urls")),
+    path("subscriptions/", include("subscriptions.urls")),
+
+    path("api/v1/", include("apps.api.v1.urls")),
+    path("apps/", include("apps.urls")),
+
+    path("api/v1/", include("plans.api.v1.urls")),
+    path("plans/", include("apps.urls")),
+
 ]
 
 admin.site.site_header = "crowdbotics_dashboard"
