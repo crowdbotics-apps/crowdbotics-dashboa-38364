@@ -8,20 +8,17 @@ from .serializers import SubscriptionSerializer, UserSubscriptionSerializer
 from rest_framework import viewsets
 from rest_framework.status import HTTP_200_OK
 
+
 class SubscriptionViewSet(viewsets.ViewSet):
     serializer_class = SubscriptionSerializer
     authentication_classes = (authentication.SessionAuthentication, authentication.TokenAuthentication)
     permission_classes = (IsAuthenticated,)
     queryset = Subscription.objects.all()
 
-    def create(self, request):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
     def retrieve(self, request, *args, pk=None):
-        return Response(self.serializer_class(self.queryset))
+        queryset = get_object_or_404(Subscription, pk=pk)
+        serializer = self.serializer_class(queryset)
+        return Response(serializer.data, status=HTTP_200_OK)
 
     def list(self, request):
         serializer = UserSubscriptionSerializer(self.queryset, many=True)
@@ -34,5 +31,15 @@ class SubscriptionViewSet(viewsets.ViewSet):
             queryset.save
         return Response(status=HTTP_200_OK)
 
-    def partial_update(self, request, pk=None):
-        pass
+    def get_object(self):
+        pk = self.kwargs.get('pk')
+        obj = get_object_or_404(self.queryset, pk=pk)
+        return obj
+
+    def partial_update(self, request, *args, **kwargs):
+        partial = kwargs['partial'] = True
+        instance = self.get_object()
+        serializer = self.serializer_class(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)

@@ -6,5 +6,5 @@ router = DefaultRouter()
 router.register('plan', PlanViewSet )
 
 urlpatterns = [
-    path("plan", include(router.urls)),
+    path("", include(router.urls)),
 ]

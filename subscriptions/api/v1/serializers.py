@@ -9,15 +9,15 @@ class SubscriptionSerializer(serializers.ModelSerializer):
 
 
 class UserSubscriptionSerializer(serializers.ModelSerializer):
-    app = serializers.SerializerMethodField()
+    application = serializers.SerializerMethodField()
     plan = serializers.SerializerMethodField()
 
     class Meta:
         model = Subscription
-        fields = ["plan", "app", "active"]
+        fields = ["plan", "application", "active"]
 
-    def get_app(self, obj):
-        return obj.app.name
+    def get_application(self, obj):
+        return obj.application.name
 
     def get_plan(self, obj):
         return f"{obj.plan.name} - {obj.plan.price}$"
