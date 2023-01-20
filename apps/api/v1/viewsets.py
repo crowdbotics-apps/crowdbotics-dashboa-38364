@@ -3,12 +3,13 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from apps.models import Applications
+from subscriptions.models import Subscription
 from .serializers import ApplicationSerializer
 from rest_framework import viewsets
 from rest_framework.status import HTTP_201_CREATED
 from rest_framework.authtoken.models import Token
 
-from .utils import generate_random_app_name, handle_related_subscription
+from .utils import check_subscription_plan
 
 
 class ApplicationViewSet(viewsets.GenericViewSet):
@@ -22,10 +23,8 @@ class ApplicationViewSet(viewsets.GenericViewSet):
 
     def create(self, request, *args, **kwargs):
         request_token = Token.objects.filter(key=request.auth).first()
-        subscription = request_token.user.subscription_user
-        generate_random_app_name(request)
-        app = handle_related_subscription(request, subscription)
-        serializer = self.get_serializer(app)
-        return Response(serializer.data, status=HTTP_201_CREATED)
-
-
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        subscription = Subscription.objects.get(user=request_token.user)
+        app_data, status_code = check_subscription_plan(subscription, request)
+        return Response(data=app_data, status=status_code)
