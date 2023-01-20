@@ -7,6 +7,8 @@ postgres-data/
 __pycache__/
 *.py[cod]
 *$py.class
+.bash_history
+.idea/
 
 # C extensions
 *.so
